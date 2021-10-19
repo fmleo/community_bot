@@ -1,6 +1,6 @@
-# import the json library and open the config file
+# import base libraries
 import json
-config = json.loads(open('config.json').read())
+import os  # to look for commands
 
 # import discord stuff
 import discord
@@ -9,8 +9,9 @@ from discord.ext import commands
 # import discord checks
 from discord.ext.commands import is_owner
 
-# import os library to look for commands
-import os
+# load the config file
+with open('config.json') as f:
+    config = json.load(f)
 
 # define bot intents
 intents = discord.Intents().default()
