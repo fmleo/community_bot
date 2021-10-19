@@ -6,8 +6,6 @@ import os  # to look for commands
 import discord
 from discord.ext import commands
 
-# import discord checks
-from discord.ext.commands import is_owner
 
 # load the config file
 with open('config.json') as f:
@@ -26,7 +24,7 @@ async def on_ready():
 
 
 @bot.command(aliases=["load"])
-@commands.check(is_owner)
+@commands.is_owner()
 async def load_extension(ctx, extension):
     """
     owner-only command used to load cogs
@@ -38,7 +36,7 @@ async def load_extension(ctx, extension):
 
 
 @bot.command(aliases=["unload"])
-@commands.check(is_owner)
+@commands.is_owner()
 async def unload_extension(ctx, extension):
     """
     owner-only command used to unload cogs
@@ -50,7 +48,7 @@ async def unload_extension(ctx, extension):
 
 
 @bot.command(aliases=["reload"])
-@commands.check(is_owner)
+@commands.is_owner()
 async def reload_extension(ctx, extension):
     """
     owner-only command used to reload cogs.
