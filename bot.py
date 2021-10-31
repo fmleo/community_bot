@@ -1,6 +1,7 @@
 # import base libraries
 import json
 import os  # to look for commands
+import logging  # for logging 
 
 # import discord stuff
 import discord
@@ -13,53 +14,42 @@ with open('config.json') as f:
 
 # define bot intents
 intents = discord.Intents().default()
+allowed_mentions = discord.AllowedMentions.none()
 
-# define the bot object itself
-bot = commands.Bot(command_prefix=config["prefix"], intents=intents)
-
-# logs to the console once the bot is up and running
-@bot.event
-async def on_ready():
-    print(f'Logged in as {bot.user}')
+logging.basicConfig(
+    level=logging.INFO,
+    format="[%(name)s %(levelname)s] %(message)s"
+)
 
 
-@bot.command(aliases=["load"])
-@commands.is_owner()
-async def load_extension(ctx, extension):
-    """
-    owner-only command used to load cogs
-    the cog needs to be unloaded first
-    in order to be able to be loaded
-    """
-    bot.load_extension(f'cogs.{extension}')
-    await ctx.send(f"Extension {extension} loaded successfully!")
+# define the bot class
+class CommunityBot(commands.AutoShardedBot):
+    """Community bot"""
+
+    def __init__(self, **kwargs):
+        self.logger = logging.getLogger('CommunityBot')
+        super().__init__(**kwargs)
+        self._load_extensions()
+
+    # logs to the console once the bot is up and running
+    async def on_ready(self):
+        print(f"Bot ready, logged in as {self.user}")
+
+    def _load_extensions(self):
+        for cog in os.listdir('./cogs/'):
+            if not cog.endswith('.py'):
+                continue
+            self.logger.debug(f"Attempting to load cog {cog}")
+            try:
+                self.load_extension(f'cogs.{cog[:-3]}')
+            except Exception:
+                self.logger.exception(f"Cannot load cog {cog}.")
+            else:
+                self.logger.info(f"Loaded cog {cog}")
 
 
-@bot.command(aliases=["unload"])
-@commands.is_owner()
-async def unload_extension(ctx, extension):
-    """
-    owner-only command used to unload cogs
-    the cog needs to be loaded first
-    in order to be able to be unloaded
-    """
-    bot.unload_extension(f'cogs.{extension}')
-    await ctx.send(f"Extension {extension} unloaded successfully!")
+# initialize the bot object itself
+bot = CommunityBot(command_prefix=config["prefix"], intents=intents)
 
-
-@bot.command(aliases=["reload"])
-@commands.is_owner()
-async def reload_extension(ctx, extension):
-    """
-    owner-only command used to reload cogs.
-    the reloaded cog needs to be loaded in
-    order for this command to work
-    """
-    bot.unload_extension(f'cogs.{extension}')
-    bot.load_extension(f'cogs.{extension}')
-    await ctx.send(f"Extension {extension} reloaded successfully!")
-
-[bot.load_extension(f'cogs.{cog[:-3]}') for cog in os.listdir('./cogs/') if cog.endswith('.py')]
-
-# runs the bot
+# run the bot
 bot.run(config['token'])
