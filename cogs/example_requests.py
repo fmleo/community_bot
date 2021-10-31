@@ -14,7 +14,11 @@ class ExampleRequests(commands.Cog):
     async def axolotl(self, ctx):
         async with aiohttp.ClientSession() as session:
             async with session.get(f"https://axoltlapi.herokuapp.com/") as response:
-                response_json = await response.json()
+                try:
+                    response.raise_for_status()
+                    response_json = await response.json()
+                except aiohttp.ClientResponseError:
+                    return await ctx.send('Unable to connect to the server! Please wait a while and try again.')
                 embed = discord.Embed(
                     color=ctx.me.color,  # defines the embed color as the bot's color in the server
                     description=response_json.get("facts"),
