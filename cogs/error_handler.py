@@ -1,6 +1,7 @@
-import discord
-import traceback
 import sys
+import traceback
+
+import discord
 from discord.ext import commands
 
 
@@ -24,7 +25,7 @@ class CommandErrorHandler(commands.Cog):
 
         cog = ctx.cog
         if cog:
-            if cog._get_overridden_method(cog.cog_command_error) is not None:
+            if cog._get_overridden_method(cog.cog_command_error) is not None:  # noqa
                 return
 
         ignored = (commands.CommandNotFound, )
