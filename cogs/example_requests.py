@@ -23,8 +23,10 @@ class ExampleRequests(commands.Cog):
                 embed.set_image(url=response_json.get("url"))  # sets the embed image with the url returned by the api
 
                 # adds a footer to the embed, the icon_url parameter takes any url with an image in it.
-                embed.set_footer(text="Command made by leowonardo#2443",
-                                 icon_url="https://en.gravatar.com/userimage/171548483/05a79763322fb378f65535c1054e8d82.jpeg")
+                embed.set_footer(
+                    text="Command made by leowonardo#2443",
+                    icon_url="https://en.gravatar.com/userimage/171548483/05a79763322fb378f65535c1054e8d82.jpeg"
+                )
 
                 await ctx.reply(embed=embed, mention_author=False)
 
